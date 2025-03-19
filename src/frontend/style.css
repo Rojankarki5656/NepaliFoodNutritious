@@ -1,0 +1,14 @@
+
+.title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+Button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 5px 10px;
+}
+TextField, PasswordField {
+    -fx-pref-width: 200px;
+}
