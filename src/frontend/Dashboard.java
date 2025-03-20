@@ -2,6 +2,7 @@ package frontend;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import Models.User;
 import javafx.geometry.Insets;
 import javafx.scene.layout.*;
 
@@ -24,11 +25,12 @@ public class Dashboard {
         Label menuTitle = new Label("Dashboard");
         menuTitle.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
 
-        Button homeButton = new Button("🏠 Home");
-        Button foodButton = new Button("🥗 Food Nutrition");
-        Button profileButton = new Button("👤 Profile");
-        Button settingsButton = new Button("⚙ Settings");
-        Button logoutButton = new Button("🚪 Logout");
+        Button homeButton = new Button("Home");
+        Button foodButton = new Button("Food Nutrition");
+//        Button profileButton = new Button("Profile");
+//        Button settingsButton = new Button("Settings");
+        Button logoutButton = new Button("Logout");
+//        Button BMRButton = new Button("C BMR & Kcal");
 
         // Create HomePage instance
         homePage = new HomePage(uiManager,user);
@@ -43,19 +45,20 @@ public class Dashboard {
         layout.setCenter(contentArea); // Default center content
 
         // Set Button Actions
-        homeButton.setOnAction(e -> showContent("🥗 Home")); // Set HomePage content
+        homeButton.setOnAction(e -> showContent("Home")); // Set HomePage content
         foodButton.setOnAction(e -> layout.setCenter(homePage.getRoot()));
-        profileButton.setOnAction(e -> showContent("👤 User Profile"));
-        settingsButton.setOnAction(e -> showContent("⚙ Settings"));
+//        BMRButton.setOnAction(e -> showContent("CalCulate"));
+//        profileButton.setOnAction(e -> showContent("ðŸ‘¤ User Profile"));
+//        settingsButton.setOnAction(e -> showContent("âš™ Settings"));
         logoutButton.setOnAction(e -> uiManager.showLoginScene()); // Return to Login Page
 
         // Style Buttons
-        for (Button button : new Button[]{homeButton, foodButton, profileButton, settingsButton, logoutButton}) {
+        for (Button button : new Button[]{homeButton, foodButton, logoutButton}) {
             button.setStyle("-fx-background-color: #34495E; -fx-text-fill: white; -fx-font-size: 14px;");
             button.setMaxWidth(Double.MAX_VALUE);
         }
 
-        sidebar.getChildren().addAll(menuTitle, homeButton, foodButton, profileButton, settingsButton, logoutButton);
+        sidebar.getChildren().addAll(menuTitle, homeButton, foodButton, logoutButton);
         layout.setLeft(sidebar);
 
         scene = new Scene(layout, 1000, 600);  // Adjusted window size
@@ -71,4 +74,5 @@ public class Dashboard {
     public Scene getScene() {
         return scene;
     }
+
 }

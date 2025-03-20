@@ -2,6 +2,7 @@ package frontend;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import middleware.ValidationLogic;
 import backend.UserService;
 
 public class Register {
@@ -19,27 +20,23 @@ public class Register {
         confirmPasswordField.setPromptText("Confirm Password");
         Button registerButton = new Button("Register");
         Button backButton = new Button("Back to Login");
+        Label messageLabel = new Label();
+
         
         registerButton.setOnAction(e -> {
         	String name = nameField.getText();
         	String email = emailField.getText();
         	String password =passwordField.getText();
         	String confirmPassword = confirmPasswordField.getText();
-        	System.out.println(password);
-        	System.out.println(confirmPassword);
-        	if (password.equals(confirmPassword)) {
-        		UserService.register(name, email, password);
-        		uiManager.showLoginScene();
-        		
-        	}else {
-        		System.out.println("Possword dont match");
-        	}
+        	ValidationLogic logic = new ValidationLogic(uiManager);
+        	String result = logic.registerValidation(name, email, password, confirmPassword);
+        	messageLabel.setText(result);
         	
         });
 
         backButton.setOnAction(e -> uiManager.showLoginScene());
 
-        VBox layout = new VBox(10, titleLabel, nameField, emailField, passwordField, confirmPasswordField, registerButton, backButton);
+        VBox layout = new VBox(10, titleLabel, nameField, emailField, passwordField, confirmPasswordField, registerButton, backButton, messageLabel);
         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 
         scene = new Scene(layout, 300, 300);

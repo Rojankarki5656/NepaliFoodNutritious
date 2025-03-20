@@ -6,7 +6,6 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import middleware.BMICalculator;
 import middleware.CaloriesCalculator;
-import middleware.FoodInformation;
 import javafx.geometry.Insets;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,6 +15,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import Models.FoodItems;
+import Models.User;
 import backend.FoodService;
 
 public class HomePage {
@@ -57,7 +59,7 @@ public class HomePage {
         Button addButton = new Button("Add Food");
         Button searchButton = new Button("Search Food");
         Button calculateButton = new Button("Calculate Calories");
-        Button calculateBMI = new Button("Calculate BMI");
+        Button calculateBMI = new Button("Calculate BMR");
 
 
         //The result of Calculated Calories of food is shown Here
@@ -84,13 +86,34 @@ public class HomePage {
         	int quantity = Integer.parseInt(quantityInput.getText());
         	String foodName = foodInput.getText();
             if (!foodName.isEmpty()) {
-                FoodService.addFood(id,foodName, quantity);
+                String result = FoodService.addFood(id,foodName, quantity);
                 foodInput.clear();
+                quantityInput.clear();
+                calorieResultLabel.setText(result);
             }
         });
         searchButton.setOnAction(e -> {
         	String foodName = foodInput.getText();
-        	FoodInformation.showFoodInfo(foodName);
+        	FoodItems fooditems = FoodService.getFoodCalories(foodName);
+            Stage secondaryStage = new Stage();
+            secondaryStage.setTitle("Food information");
+            
+            StackPane secondaryLayout = new StackPane();
+
+            Label resultLabel = new Label(
+            		"Calories: "+ fooditems.getCalories() +
+            		"\nProteins: " + fooditems.getProtein() +
+            		"\nFats: " + fooditems.getFats() +
+            		"\nCarbohydrates: " + fooditems.getCarbohydrates()
+            		);
+            resultLabel.setPrefHeight(150);
+            resultLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+            secondaryLayout.getChildren().add(resultLabel);
+             
+            Scene secondaryScene = new Scene(secondaryLayout, 400, 250);
+            secondaryStage.setScene(secondaryScene);
+            secondaryStage.show();
+
             
         });
 
@@ -110,7 +133,7 @@ public class HomePage {
         });
         
         calculateBMI.setOnAction(e -> {
-        	BMICalculator.calculateBMI();
+        	uiManager.showBMRScene(user);
         });
         String totalCaloriesResult = CaloriesCalculator.totalCalories(user.getId());
         totalCalories.setText(totalCaloriesResult);
