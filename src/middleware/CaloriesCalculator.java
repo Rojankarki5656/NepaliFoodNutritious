@@ -10,7 +10,9 @@ public class CaloriesCalculator {
             try {
                 int quantity = Integer.parseInt(quantityStr);
                 float caloriesPerUnit = FoodService.foodCalories(foodName);
-
+                if(quantity < 0) {
+                	return "Quantity cannot be less than zero";
+                }
                 if (caloriesPerUnit > 0) {
                     float totalCalories = quantity * caloriesPerUnit;
                     return "Total Calories: " + totalCalories;

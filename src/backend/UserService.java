@@ -3,7 +3,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import frontend.User;
+
+import Models.User;
 
 public class UserService {
 	

@@ -1,8 +1,9 @@
 package frontend;
+
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import backend.UserService;
+import middleware.ValidationLogic;  // Import LoginValidation for validation checks
 
 public class Login {
     private final Scene scene;
@@ -21,16 +22,11 @@ public class Login {
         loginButton.setOnAction(e -> {
             String email = emailField.getText();
             String password = passwordField.getText();
-
-            User loggedInUser = UserService.getUserInfo(email, password);
-            if (loggedInUser != null) {
-                messageLabel.setText("Login Successful!");
-                uiManager.showDashboard(loggedInUser);
-            } else {
-            	messageLabel.setText("Invalid Email or Password!");
-            }
-
-
+            
+            ValidationLogic logic = new ValidationLogic(uiManager); 
+            String result = logic.loginValidation(email, password);
+            messageLabel.setText(result);
+//        	uiManager.showBMRScene(null);
         });
 
         registerButton.setOnAction(e -> uiManager.showRegisterScene());
@@ -40,7 +36,6 @@ public class Login {
 
         scene = new Scene(layout, 300, 300);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
     }
 
     public Scene getScene() {
