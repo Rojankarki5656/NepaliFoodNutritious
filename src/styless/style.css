@@ -9,6 +9,10 @@ Button {
     -fx-font-size: 14px;
     -fx-padding: 5px 10px;
 }
-TextField, PasswordField {
-    -fx-pref-width: 200px;
+
+.text-field {
+    -fx-max-width: 300px;
+}
+.password-field {
+    -fx-max-width: 300px;
 }

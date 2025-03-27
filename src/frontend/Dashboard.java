@@ -11,7 +11,8 @@ public class Dashboard {
     private final UIManager uiManager;
     private BorderPane layout;  // Make layout an instance variable
     private Label contentLabel;
-    private HomePage homePage; // Reference to HomePage
+    private NutritiousSection ns; // Reference to HomePage
+    private HomePage homepage;
 
     public Dashboard(UIManager uiManager, User user) {
         this.uiManager = uiManager;
@@ -27,13 +28,11 @@ public class Dashboard {
 
         Button homeButton = new Button("Home");
         Button foodButton = new Button("Food Nutrition");
-//        Button profileButton = new Button("Profile");
-//        Button settingsButton = new Button("Settings");
         Button logoutButton = new Button("Logout");
-//        Button BMRButton = new Button("C BMR & Kcal");
 
         // Create HomePage instance
-        homePage = new HomePage(uiManager,user);
+        ns = new NutritiousSection(uiManager,user);
+        homepage = new HomePage(uiManager, user);
 
         // Content Label (Changes Based on Selection)
         contentLabel = new Label("Welcome, " + user.getName() + "!");
@@ -45,11 +44,8 @@ public class Dashboard {
         layout.setCenter(contentArea); // Default center content
 
         // Set Button Actions
-        homeButton.setOnAction(e -> showContent("Home")); // Set HomePage content
-        foodButton.setOnAction(e -> layout.setCenter(homePage.getRoot()));
-//        BMRButton.setOnAction(e -> showContent("CalCulate"));
-//        profileButton.setOnAction(e -> showContent("ðŸ‘¤ User Profile"));
-//        settingsButton.setOnAction(e -> showContent("âš™ Settings"));
+        homeButton.setOnAction(e -> layout.setCenter(homepage.getRoot())); // Set HomePage content
+        foodButton.setOnAction(e -> layout.setCenter(ns.getRoot()));
         logoutButton.setOnAction(e -> uiManager.showLoginScene()); // Return to Login Page
 
         // Style Buttons
@@ -62,15 +58,9 @@ public class Dashboard {
         layout.setLeft(sidebar);
 
         scene = new Scene(layout, 1000, 600);  // Adjusted window size
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("../styless/style.css").toExternalForm());
 
     }
-
-    private void showContent(String text) {
-        contentLabel.setText(text);
-        layout.setCenter(new StackPane(contentLabel)); // Show text in center
-    }
-
     public Scene getScene() {
         return scene;
     }

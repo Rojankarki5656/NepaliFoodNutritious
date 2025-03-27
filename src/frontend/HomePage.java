@@ -1,169 +1,196 @@
 package frontend;
-import javafx.scene.Scene;
-import javafx.scene.chart.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.stage.Stage;
-import middleware.BMICalculator;
-import middleware.CaloriesCalculator;
-import javafx.geometry.Insets;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
-import Models.FoodItems;
+import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
+import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import middleware.HomepageLogic;
+import Models.Target;
 import Models.User;
-import backend.FoodService;
+import backend.TargetService;
 
 public class HomePage {
+
+    private Label targetDisplayLabel, consumedDisplayLabel, remainingDisplayLabel, messageLabel;
+    private TextField targetField, consumedField;
+    private Button setTargetButton, updateButton, resetTargetButton, showHistoryButton;
     private PieChart pieChart;
-    private BarChart<String, Number> barChart;
-    private TextField foodInput, quantityInput;
-    private final Scene scene;
-    private final UIManager uiManager;
     private VBox root;
-    private Label calorieResultLabel,totalCalories;
+    private Scene scene;
+    private final UIManager uiManager;
+    private final User user;
 
     public HomePage(UIManager uiManager, User user) {
         this.uiManager = uiManager;
+        this.user = user;
         root = new VBox(15);
         root.setPadding(new Insets(20));
-        
-        //Label of HomePage
-        Label titleLabel = new Label("Nutrition Analysis");
-        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
-        
-        //FoodInout Section
-        foodInput = new TextField();
-        foodInput.setPromptText("Enter food item");
-        ContextMenu suggestionsMenu = new ContextMenu();
-        foodInput.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.isEmpty()) {
-                List<String> foodSuggestions = FoodService.searchFood(newValue);
-                FoodService.showSuggestions(suggestionsMenu, foodInput, foodSuggestions);
-            } else {
-                suggestionsMenu.hide();
+
+        boolean isTrue = HomepageLogic.switchInHomePage(user.getId());
+        if (isTrue) {
+            loadConsumptionUI();
+        } else {
+            initializeUI();
+        }
+        scene = new Scene(root, 400, 600);
+    }
+
+    public void initializeUI() {
+        Label targetLabel = new Label("Set your target calorie intake:");
+        targetField = new TextField();
+        setTargetButton = new Button("Set Target");
+        messageLabel = new Label();
+
+        setTargetButton.setOnAction(e -> {
+            try {
+                int newTarget = Integer.parseInt(targetField.getText());
+                if (newTarget <= 0) {
+                    messageLabel.setText("Error: Must be greater than 0!");
+                    messageLabel.setTextFill(Color.RED);
+                    return;
+                }
+                HomepageLogic logic = new HomepageLogic();
+                String result = logic.setTargetCalories(newTarget, user.getId());
+
+                if (result.contains("Yay!")) {
+                    loadConsumptionUI();
+                } else {
+                    messageLabel.setText(result);
+                    messageLabel.setTextFill(Color.GREEN);
+                }
+            } catch (NumberFormatException ex) {
+                messageLabel.setText("Invalid input! Please enter a number.");
+                messageLabel.setTextFill(Color.RED);
             }
         });
 
-        //Quantity Input Section
-        quantityInput = new TextField();
-        quantityInput.setPromptText("Enter quantity");
 
-        //Buttons
-        Button addButton = new Button("Add Food");
-        Button searchButton = new Button("Search Food");
-        Button calculateButton = new Button("Calculate Calories");
-        Button calculateBMI = new Button("Calculate BMR");
+        root.getChildren().addAll(targetLabel, targetField, setTargetButton, messageLabel);
+    }
+
+    private void loadConsumptionUI() {
+        root.getChildren().clear();
+
+        // Fetch target calories
+        Target targetCal = TargetService.checkTarget(user.getId());
+        int targetCalories = targetCal.getTarget();
+        Float remainingCalories = targetCal.getRemaining();
+        Float consumedCal = targetCal.getTotalCalories();
+
+        targetDisplayLabel = new Label("Target: " + targetCalories + " kcal");
+        consumedDisplayLabel = new Label("Consumed: " + consumedCal + " kcal");
+        remainingDisplayLabel = new Label("Remaining: " + remainingCalories + " kcal");
+        messageLabel = new Label();
+
+        consumedField = new TextField();
+        consumedField.setPromptText("Enter consumed calories");
+
+        updateButton = new Button("Add Food");
+        resetTargetButton = new Button("Reset Target");
+        showHistoryButton = new Button("Show History");
 
 
-        //The result of Calculated Calories of food is shown Here
-        calorieResultLabel = new Label();
-        calorieResultLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
-        
-        //Filter Button - Updates the charts
-        Button filterButton = new Button("Filter Data");
-        
-        //Total Calories
-        totalCalories = new Label();
-        totalCalories.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
-        //Pie charts and Bar chart
         pieChart = new PieChart();
-        CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
-        barChart = new BarChart<>(xAxis, yAxis);
+        updatePieChart(targetCalories);
         
-        //Logics of the Buttons
-        addButton.setOnAction(e -> {
-        	int id = user.getId();
-        	int quantity = Integer.parseInt(quantityInput.getText());
-        	String foodName = foodInput.getText();
-            if (!foodName.isEmpty()) {
-                String result = FoodService.addFood(id,foodName, quantity);
-                foodInput.clear();
-                quantityInput.clear();
-                calorieResultLabel.setText(result);
+        showHistoryButton.setOnAction(e -> {
+        	Target result = TargetService.showHistory(user.getId());
+
+        	if (result != null) { // Ensure result is not null before displaying
+        	    Stage secondaryStage = new Stage();
+        	    secondaryStage.setTitle("History");
+
+        	    StackPane secondaryLayout = new StackPane();
+        	    
+        	    // Convert Target object to a string format
+        	    String displayText = String.format(
+        	        "Target: %d kcal\nConsumed: %.2f kcal\nRemaining: %.2f kcal",
+        	        result.getTarget(), result.getTotalCalories(), result.getRemaining()
+        	    );
+
+        	    Label secondaryLabel = new Label(displayText);
+        	    secondaryLayout.getChildren().add(secondaryLabel);
+
+        	    Scene secondaryScene = new Scene(secondaryLayout, 250, 150);
+        	    secondaryStage.setScene(secondaryScene);
+        	    secondaryStage.show();
+        	} else {
+        	    System.out.println("No history found for this user.");
+        	}
+
+        });
+
+        updateButton.setOnAction(e -> {
+            try {
+                int consumedCalories = Integer.parseInt(consumedField.getText());
+                if (consumedCalories <= 0) {
+                    messageLabel.setText("Error: Value must be positive.");
+                    messageLabel.setTextFill(Color.RED);
+                    return;
+                }
+                HomepageLogic logic = new HomepageLogic();
+                String result = logic.addFood(consumedCalories, user.getId());
+
+                updateLabels(targetCalories);
+                updatePieChart(targetCalories);
+
+                messageLabel.setText(result);
+                messageLabel.setTextFill(Color.GREEN);
+                consumedField.clear();
+            } catch (NumberFormatException ex) {
+                messageLabel.setText("Invalid input! Enter a number.");
+                messageLabel.setTextFill(Color.RED);
             }
         });
-        searchButton.setOnAction(e -> {
-        	String foodName = foodInput.getText();
-        	FoodItems fooditems = FoodService.getFoodCalories(foodName);
-            Stage secondaryStage = new Stage();
-            secondaryStage.setTitle("Food information");
-            
-            StackPane secondaryLayout = new StackPane();
-
-            Label resultLabel = new Label(
-            		"Calories: "+ fooditems.getCalories() +
-            		"\nProteins: " + fooditems.getProtein() +
-            		"\nFats: " + fooditems.getFats() +
-            		"\nCarbohydrates: " + fooditems.getCarbohydrates()
-            		);
-            resultLabel.setPrefHeight(150);
-            resultLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-            secondaryLayout.getChildren().add(resultLabel);
-             
-            Scene secondaryScene = new Scene(secondaryLayout, 400, 250);
-            secondaryStage.setScene(secondaryScene);
-            secondaryStage.show();
-
-            
+        resetTargetButton.setOnAction(e -> {
+            HomepageLogic logic = new HomepageLogic();
+            logic.resetTargetCalories(user.getId());
+            root.getChildren().clear();
+            initializeUI();
+            messageLabel.setText("Target reset. Set a new one.");
         });
 
-        calculateButton.setOnAction(e -> {
-            String foodName = foodInput.getText();
-            String quantity = quantityInput.getText();
-    		if (!foodName.isEmpty() && !quantity.isEmpty()) {
-    			String result = CaloriesCalculator.CalculateCalories(foodName, quantity);
-    			calorieResultLabel.setText(result);
-    		}else {
-    			calorieResultLabel.setText("Please input foodname and quantity");
-    		}
-        });
-
-        filterButton.setOnAction(e -> {
-            updateMyboy(user.getId());
-        });
-        
-        calculateBMI.setOnAction(e -> {
-        	uiManager.showBMRScene(user);
-        });
-        String totalCaloriesResult = CaloriesCalculator.totalCalories(user.getId());
-        totalCalories.setText(totalCaloriesResult);
-        updateMyboy(user.getId());
-        //adding all the widgets in HBox container
-        HBox inputSection = new HBox(10, foodInput, quantityInput, addButton, searchButton, calculateButton, calculateBMI);
-        HBox filterSection = new HBox(10, filterButton);
-        root.getChildren().addAll(titleLabel, inputSection, calorieResultLabel, filterSection,totalCalories,pieChart, barChart);
-
-        // Scene Setup
-        scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        root.getChildren().addAll(
+            targetDisplayLabel, consumedDisplayLabel, remainingDisplayLabel,
+            consumedField, updateButton, resetTargetButton,showHistoryButton,
+            pieChart, messageLabel
+        );
     }
 
     public VBox getRoot() {
         return root;
     }
-    
-    private void updateMyboy(int id) {
-    	pieChart.getData().clear();
-        barChart.getData().clear();
 
-        Map<String, Integer> foodData = FoodService.updateCharts(id);
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
+    public Scene getScene() {
+        return scene;
+    }
 
-        for (Map.Entry<String, Integer> entry : foodData.entrySet()) {
-            pieChart.getData().add(new PieChart.Data(entry.getKey(), entry.getValue()));
-            series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
-        }
+    private void updateLabels(int targetCalories) {
+        Target targetCal = TargetService.checkTarget(user.getId());
+        Float remainingCalories = targetCal.getRemaining();
+        Float consumedCal = targetCal.getTotalCalories();
+        targetDisplayLabel.setText("Target: " + targetCalories + " kcal");
+        consumedDisplayLabel.setText("Consumed: " + consumedCal + " kcal");
+        remainingDisplayLabel.setText("Remaining: " + remainingCalories + " kcal");
+    }
 
-        barChart.getData().add(series);
+    private void updatePieChart(int targetCalories) {
+        Target targetCal = TargetService.checkTarget(user.getId());
+        Float remainingCalories = targetCal.getRemaining();
+        Float consumedCal = targetCal.getTotalCalories();
+        pieChart.getData().clear();
+
+        PieChart.Data consumedData = new PieChart.Data("Consumed", consumedCal);
+        PieChart.Data remainingData = new PieChart.Data("Remaining", remainingCalories);
+
+        pieChart.getData().addAll(consumedData, remainingData);
+
+        // Fix: Ensure styles are applied safely
+        consumedData.getNode().setStyle("-fx-pie-color: green;");
+        remainingData.getNode().setStyle("-fx-pie-color: white;");
     }
 }

@@ -12,7 +12,7 @@ public class UserService {
 	public static User getUserInfo(String email, String password) {
         String query = "SELECT id, name FROM user WHERE email = ? AND password = ?";
 
-        try (Connection conn = DBConnection.connectUserDB();
+        try (Connection conn = DBConnection.connectDB();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, email);
@@ -38,7 +38,7 @@ public class UserService {
     	
     	String query = "INSERT INTO user(name,email,password) values(?,?,?)";
     	
-    	try (Connection conn = DBConnection.connectUserDB();
+    	try (Connection conn = DBConnection.connectDB();
              PreparedStatement stmt = conn.prepareStatement(query)) {
                
                stmt.setString(1, name);
