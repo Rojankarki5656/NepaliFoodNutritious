@@ -5,24 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import Models.FoodItems;
-import Models.Target;
-import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 
 public class FoodService {
 	//For adding the user's daily food into the database
-	public static String addFood(int id, String foodName, Integer quantity, Float calories) {
+	public static String addFood(int id, String foodName, Integer quantity, float calories) {
 	    if (foodName.isEmpty() || quantity <= 0) {
 	        return "Food cannot be empty and quantity cannot be less or equals to zero";
 	    }
@@ -112,19 +106,21 @@ public class FoodService {
 		}
 
 		public static FoodItems getFoodCalories(String name) { // For retrieving s the food's information
-		    String query = "SELECT calories, protein, fat, carbohydrates FROM foods WHERE name = ?";
+		    String query = "SELECT name, calories, protein, fat, carbohydrates FROM foods WHERE name = ?";
 
 		    try (Connection conn = DBConnection.connectDB();
 		         PreparedStatement stmt = conn.prepareStatement(query)) {
 
 		        stmt.setString(1, name);
 		        ResultSet rs = stmt.executeQuery();
+		        String foodName = null;
 		        Float calories = null;
 		        Float proteins = null;
 		        Float fats = null;
 		        Float carbohydrates = null;
 
 		        if (rs.next()) {
+		        	foodName = rs.getString("name");
 		            calories = rs.getFloat("calories");
 		            proteins = rs.getFloat("protein");
 		            fats = rs.getFloat("fat");
@@ -132,7 +128,7 @@ public class FoodService {
 		        }
 		        
 		        rs.close();
-		        return new FoodItems(calories, proteins, carbohydrates, fats);
+		        return new FoodItems(name, calories, proteins, carbohydrates, fats);
 
 		    } catch (SQLException e) {
 		        e.printStackTrace();

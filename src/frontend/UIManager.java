@@ -8,6 +8,7 @@ public class UIManager {
     private final Login login;
     private final Register register;
     private Dashboard dashboard;
+    private AdminDashboard adminDashboard;
     private DailyKcalBMR bmr;
 
     public UIManager(Stage stage) {
@@ -33,10 +34,20 @@ public class UIManager {
             System.out.println("User not found!");
             return;
         }
-        
-        this.dashboard = new Dashboard(this, user);
-        primaryStage.setScene(dashboard.getScene());
-    }
+
+        if (primaryStage == null) {
+            System.out.println("Error: Primary stage is not initialized!");
+            return;
+        }
+
+        if (user.getActor().equals("user")) {
+            this.dashboard = new Dashboard(this, user);
+            primaryStage.setScene(dashboard.getScene());
+        } else if (user.getActor().equals("admin")) {
+            this.adminDashboard = new AdminDashboard(this, user);
+            primaryStage.setScene(adminDashboard.getScene());
+        }
+        }
 
     public Scene getLoginScene() {
         return login.getScene();

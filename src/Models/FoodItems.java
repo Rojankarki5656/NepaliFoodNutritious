@@ -1,18 +1,23 @@
 package Models;
 
 public class FoodItems {
+	private String name;
     private Float calories;
     private Float protein;
     private Float carbohydrates;
     private Float fats;
 
     // Constructor
-    public FoodItems(Float calories, Float protein, Float carbohydrates, Float fats) {
+    public FoodItems(String name,Float calories, Float protein, Float carbohydrates, Float fats) {
+    	this.name = name;
         this.calories = calories;
         this.protein = protein;
         this.carbohydrates = carbohydrates;
         this.fats = fats;
     }
+    public String getName() {
+    	return name; 
+    	}
 
     // Getter methods
     public Float getCalories() {

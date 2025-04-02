@@ -1,57 +1,60 @@
 package backend;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
-import Models.Target;
+import Models.User_Target;
 
 public class TargetService {
-	public static void saveTargetToDatabase(int target, int id) {
+	public static void saveTargetToDatabase(double target, int id, LocalDate date) {
 	    try (Connection conn = DBConnection.connectDB()) {
-	        String query = "INSERT INTO user_target (target, user_id, remaining, status) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE target = ?";
+	        String query = "INSERT INTO user_target (target, user_id, remaining, status, end_date) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE target = ?";
 	        PreparedStatement pstmt = conn.prepareStatement(query);
-	        pstmt.setInt(1, target);
+	        pstmt.setDouble(1, target);
 	        pstmt.setInt(2, id);
-	        pstmt.setInt(3, target);
+	        pstmt.setDouble(3, target);
 	        pstmt.setString(4, "Active");
-	        pstmt.setInt(5, target);
+	        pstmt.setDouble(6, target);
+	        pstmt.setDate(5, Date.valueOf(date));
 	        pstmt.executeUpdate();
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
 	}
-	public static Target checkTarget(int id) {
+	public static User_Target checkTarget(int id) {
 	    try (Connection conn = DBConnection.connectDB()) {
-	        String query = "SELECT target, status, calories_taken, remaining from user_target WHERE user_id =?";
+	        String query = "SELECT target, status, calories_taken, remaining, date, end_date from user_target WHERE user_id =? AND status=?";
 	        PreparedStatement pstmt = conn.prepareStatement(query);
 	        pstmt.setInt(1, id);
+	        pstmt.setString(2, "Active");
 		    ResultSet rs = pstmt.executeQuery();
-		    Integer targetCalories = null;
-		    String status = null;
-		    Float totalCalories = null;
-		    Float remaining = null;
-		    while (rs.next()){
-		        targetCalories = rs.getInt("target");
-		        status = rs.getString("status");
-		        totalCalories = rs.getFloat("calories_taken");
-		        remaining = rs.getFloat("remaining");
-		        
-		    }
-		    rs.close();
-		    return new Target(targetCalories, status, totalCalories, remaining);
+		    if (rs.next()){
+	                User_Target target = new User_Target();
+	                target.setUserId(id);
+	                target.setTargetCalories(rs.getDouble("target"));
+	                target.setCaloriesTaken(rs.getDouble("calories_taken"));
+	                target.setTargetRemaining(rs.getDouble("remaining"));
+	                target.setStartDate(rs.getDate("date").toLocalDate());
+	                target.setEndDate(rs.getDate("end_date").toLocalDate());
+	                target.setStatus(rs.getString("status"));
+	                
+	                return target;
+	                }
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
 		return null;
 	}
-	public static void saveConsumedCaloriesToDatabase(Float consumed, int target) {
+	public static void saveConsumedCaloriesToDatabase(double consumed, double target) {
 		try (Connection conn = DBConnection.connectDB()) {
 	        String query = "UPDATE user_target SET calories_taken = calories_taken + ? WHERE target = ?";
 	        PreparedStatement pstmt = conn.prepareStatement(query);
-	        pstmt.setFloat(1, consumed);
-	        pstmt.setInt(2, target);
+	        pstmt.setDouble(1, consumed);
+	        pstmt.setDouble(2, target);
 	        pstmt.executeUpdate();
 	    } catch(Exception e) {
 	    	e.printStackTrace();
@@ -70,13 +73,22 @@ public class TargetService {
 	        e.printStackTrace();
 	    }
 	}
-	public static void updateRemaining(int id) {
+	public static void updateRemaining(int id, double totalcal) {
 	    try (Connection conn = DBConnection.connectDB()) {
-	        String query = "UPDATE user_target ut SET ut.remaining = ut.remaining - ut.calories_taken  WHERE status = ? AND user_id = ? ";
+	        User_Target target = TargetService.checkTarget(id);
+	        double userTarget = target.getTargetCalories();
+	    	if(userTarget - totalcal < 0) {
+	    		System.out.println("Do nothing!");
+	    	}
+	    	else{
+	        String query = "UPDATE user_target ut SET ut.remaining = ?  WHERE status = ? AND user_id = ? ";
 	        PreparedStatement pstmt = conn.prepareStatement(query);
-	        pstmt.setString(1, "Active");
-	        pstmt.setInt(2, id);
+
+	        pstmt.setDouble(1, userTarget - totalcal);
+	        pstmt.setString(2, "Active");
+	        pstmt.setInt(3, id);
 	        pstmt.executeUpdate();
+	    	}
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
@@ -104,8 +116,8 @@ public static int updateCalories(int id) {
 	return totalCalories;
 
 }
-public static Target showHistory(int id) {
-    Target targetData = null; // Default to null in case no record is found
+public static User_Target showHistory(int id) {
+    User_Target targetData = null; // Default to null in case no record is found
 
     try (Connection conn = DBConnection.connectDB();
          PreparedStatement stmt = conn.prepareStatement(
@@ -120,7 +132,7 @@ public static Target showHistory(int id) {
             float remaining = rs.getFloat("remaining");
             float calories_taken = rs.getFloat("calories_taken");
 
-            targetData = new Target(target, "", calories_taken, remaining);
+            targetData = null;
         }
         
     } catch (SQLException e) {

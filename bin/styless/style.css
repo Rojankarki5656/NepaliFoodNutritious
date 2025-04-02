@@ -1,18 +1,99 @@
-
-.title {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
+/* Main dashboard styling */
+.dashboard-root {
+    -fx-background-color: #f5f7fa;
 }
-Button {
-    -fx-background-color: #4CAF50;
+
+/* Sidebar styling */
+.sidebar {
+    -fx-background-color: #4a6fa5;
+    -fx-spacing: 20;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+.app-title {
+    -fx-text-fill: white;
+    -fx-padding: 0 0 20 0;
+}
+
+.user-label {
     -fx-text-fill: white;
     -fx-font-size: 14px;
-    -fx-padding: 5px 10px;
+    -fx-font-weight: bold;
 }
 
-.text-field {
-    -fx-max-width: 300px;
+/* Navigation buttons */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 10 15;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
 }
-.password-field {
-    -fx-max-width: 300px;
+
+.nav-button:hover {
+    -fx-background-color: rgba(255,255,255,0.1);
+}
+
+/* Content area */
+.content-area {
+    -fx-padding: 30;
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+/* Section specific styling */
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 20 0;
+}
+
+/* Chart styling */
+.chart {
+    -fx-background-color: transparent;
+    -fx-padding: 20;
+}
+
+.chart-title {
+    -fx-font-size: 16px;
+    -fx-text-fill: #34495e;
+}
+
+/* Form elements */
+.form-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #34495e;
+}
+
+.form-field {
+    -fx-padding: 8;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #ddd;
+    -fx-font-size: 14px;
+}
+
+/* Buttons */
+.action-button {
+    -fx-background-color: #4a6fa5;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.action-button:hover {
+    -fx-background-color: #3a5a80;
+}
+
+/* Progress indicators */
+.progress-indicator {
+    -fx-progress-color: #4a6fa5;
 }

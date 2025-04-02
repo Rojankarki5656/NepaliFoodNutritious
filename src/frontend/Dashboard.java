@@ -28,6 +28,8 @@ public class Dashboard {
 
         Button homeButton = new Button("Home");
         Button foodButton = new Button("Food Nutrition");
+        Button calculateBMR = new Button("Calculate BMR");
+        Button userGuide = new Button("User Guide");
         Button logoutButton = new Button("Logout");
 
         // Create HomePage instance
@@ -47,14 +49,18 @@ public class Dashboard {
         homeButton.setOnAction(e -> layout.setCenter(homepage.getRoot())); // Set HomePage content
         foodButton.setOnAction(e -> layout.setCenter(ns.getRoot()));
         logoutButton.setOnAction(e -> uiManager.showLoginScene()); // Return to Login Page
+        userGuide.setOnAction(e -> layout.setCenter(userGuide()));
+        calculateBMR.setOnAction(e -> {
+        	uiManager.showBMRScene(user);
+        });
 
         // Style Buttons
-        for (Button button : new Button[]{homeButton, foodButton, logoutButton}) {
+        for (Button button : new Button[]{homeButton, foodButton,userGuide, logoutButton, calculateBMR}) {
             button.setStyle("-fx-background-color: #34495E; -fx-text-fill: white; -fx-font-size: 14px;");
             button.setMaxWidth(Double.MAX_VALUE);
         }
 
-        sidebar.getChildren().addAll(menuTitle, homeButton, foodButton, logoutButton);
+        sidebar.getChildren().addAll(menuTitle, homeButton, foodButton,calculateBMR, userGuide, logoutButton);
         layout.setLeft(sidebar);
 
         scene = new Scene(layout, 1000, 600);  // Adjusted window size
@@ -63,6 +69,15 @@ public class Dashboard {
     }
     public Scene getScene() {
         return scene;
+    }
+    
+    public VBox userGuide() {
+        VBox sidebar = new VBox(10);
+        Label userGuideLabel = new Label("User Guide");
+        
+        sidebar.getChildren().add(userGuideLabel);
+        sidebar.setPadding(new Insets(20));        
+        return sidebar;  // ✅ Returning VBox instead of Scene
     }
 
 }

@@ -17,7 +17,6 @@ public class ValidationLogic {
     }
 
     public String loginValidation(String email, String password) {
-        // Validate empty fields
         if (email.isEmpty() || password.isEmpty()) {
             return "ERROR: Email or password cannot be empty!";
         }

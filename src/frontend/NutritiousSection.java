@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import Models.FoodItems;
-import Models.Target;
+import Models.User_Target;
 import Models.User;
 import backend.FoodService;
 import backend.TargetService;
@@ -56,7 +56,6 @@ public class NutritiousSection {
         Button addButton = new Button("Add Food");
         Button searchButton = new Button("Search Food");
         Button calculateButton = new Button("Calculate Calories");
-        Button calculateBMI = new Button("Calculate BMR");
 
 
         //The result of Calculated Calories of food is shown Here
@@ -100,11 +99,11 @@ public class NutritiousSection {
                 Optional<ButtonType> result = alert.showAndWait();
                 // Run method if "Yes" is clicked
                 if (result.isPresent() && result.get() == yesButton) {
-                	Target cal = TargetService.checkTarget(id);
-                	int target = cal.getTarget();
+                	User_Target cal = TargetService.checkTarget(id);
+                	double target = cal.getTargetCalories();
                     String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
                     TargetService.saveConsumedCaloriesToDatabase(quantity*calories, target );
-                    TargetService.updateRemaining(id);
+                    TargetService.updateRemaining(id, quantity*calories);
                     calorieResultLabel.setText(result1);
                 } else {
                     String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
@@ -155,14 +154,11 @@ public class NutritiousSection {
             updateMyboy(user.getId());
         });
         
-        calculateBMI.setOnAction(e -> {
-        	uiManager.showBMRScene(user);
-        });
         int totalCaloriesResult = TargetService.updateCalories(user.getId());
         totalCalories.setText("Total Calories: "+totalCaloriesResult);
         updateMyboy(user.getId());
         //adding all the widgets in HBox container
-        HBox inputSection = new HBox(10, foodInput, quantityInput, addButton, searchButton, calculateButton, calculateBMI);
+        HBox inputSection = new HBox(10, foodInput, quantityInput, addButton, searchButton, calculateButton);
         HBox filterSection = new HBox(10, filterButton);
         root.getChildren().addAll(titleLabel, inputSection, calorieResultLabel, filterSection,totalCalories,pieChart, barChart);
 

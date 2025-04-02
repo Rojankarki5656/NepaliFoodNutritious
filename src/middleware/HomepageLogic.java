@@ -1,18 +1,21 @@
 package middleware;
 
-import Models.Target;
+import java.time.LocalDate;
+
+import Models.User_Target;
 import backend.TargetService;
 
 public class HomepageLogic {
-	private static int targetCalories;
-	private static Float cumulativeConsumedCalories;
+	private static double targetCalories;
+	private static double cumulativeConsumedCalories;
 	
 	public static boolean switchInHomePage(int id) {
-        Target targetCal = TargetService.checkTarget(id);
+        User_Target targetCal = TargetService.checkTarget(id);
         if (targetCal != null && targetCal.getStatus().equals("Active")) {
-            targetCalories = targetCal.getTarget();
+            targetCalories = targetCal.getTargetCalories();
+            cumulativeConsumedCalories = targetCal.getCaloriesTaken();
+
         }
-        cumulativeConsumedCalories = (float) TargetService.updateCalories(id);
         if (targetCalories > 0) {
             return true;
         }
@@ -20,44 +23,48 @@ public class HomepageLogic {
      return false;
 
 	}
-    public String setTargetCalories(int newTarget, int id) {
+    public String setTargetCalories(int newTarget, int id, LocalDate date ) {
         try {
             if (newTarget <= 0) {
             	return "Error: Target must be greater than 0!";
                 
             }
             targetCalories = newTarget;
-            TargetService.saveTargetToDatabase(targetCalories, id);
+            TargetService.saveTargetToDatabase(targetCalories, id, date);
             return "Yay!";
         } catch (NumberFormatException ex) {
             return "Invalid input! Please enter a number.";
         }
     }
-    public String addFood(int consumedCalories, int id) {
+    
+    public String addFood(int consumedCalories, int id, double totalcal) {
         try {
-            if (cumulativeConsumedCalories + consumedCalories > targetCalories) {
+            User_Target targetCal = TargetService.checkTarget(id);
+            LocalDate currentDate = LocalDate.now();
+            if (totalcal + consumedCalories >= targetCalories) {
+            	resetTargetCalories(id, "Completed");
                 return "Error: Consumed calories exceed target!";
             }
-
-            cumulativeConsumedCalories += consumedCalories;
-            System.out.println(consumedCalories);
-            System.out.println(cumulativeConsumedCalories);
-            System.out.println(targetCalories);
-            TargetService.saveConsumedCaloriesToDatabase(cumulativeConsumedCalories, targetCalories);
-            TargetService.updateRemaining(id);
-
-            if (cumulativeConsumedCalories == targetCalories) {
-                return "Completed! You have reached your target.";
-            } else {
-                return "";
+            
+            if(targetCal.getEndDate().isAfter(currentDate)) {
+            	return "You have reached the date";
             }
+
+            totalcal += consumedCalories;
+            System.out.println(targetCal.getEndDate());
+            System.out.println(currentDate);
+
+            TargetService.saveConsumedCaloriesToDatabase(totalcal, targetCalories);
+            TargetService.updateRemaining(id, totalcal);
+            
+            return "Sucess";
+
         } catch (NumberFormatException ex) {
             return "Invalid input! Please enter a number.";
         }
     }
 
-    public void resetTargetCalories(int id) {
-        String status = "Reset";
+    public void resetTargetCalories(int id, String status) {
         TargetService.resetTargetToDatabase(status, id);
         switchInHomePage(id);
     }
