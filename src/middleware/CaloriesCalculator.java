@@ -24,7 +24,7 @@ public class CaloriesCalculator {
             }
 	}
 	
-	public static String totalCalories(int id) {
+	public static float totalCalories(int id) {
         Map<String, Integer> foodData = FoodService.updateCharts(id);
         float total = foodData.entrySet().stream()
                 .map(entry -> CalculateCalories(entry.getKey(), String.valueOf(entry.getValue())))
@@ -32,7 +32,6 @@ public class CaloriesCalculator {
                 .map(result -> Float.parseFloat(result.replace("Total Calories: ", "")))
                 .reduce(0f, Float::sum); // Sum up the calories
 
-            return "Total Calories: " + total;
+            return total;
 	}
-
 }

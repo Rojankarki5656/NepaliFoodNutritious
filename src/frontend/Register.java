@@ -39,8 +39,8 @@ public class Register {
         VBox layout = new VBox(10, titleLabel, nameField, emailField, passwordField, confirmPasswordField, registerButton, backButton, messageLabel);
         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 
-        scene = new Scene(layout, 300, 300);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        scene = new Scene(layout, 1550, 800);
+        scene.getStylesheets().add(getClass().getResource("../styless/style.css").toExternalForm());
 
     }
 

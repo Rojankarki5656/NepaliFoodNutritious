@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import middleware.BMICalculator;
+import middleware.BMRCalculator;
 
 public class DailyKcalBMR {
     private Scene scene;
@@ -67,7 +67,7 @@ public class DailyKcalBMR {
         	int activityFactor = Integer.parseInt(activityFactorField.getText());
 
         	// Calculate BMR
-        	BMR mybmr = BMICalculator.calculateKcal(sex, weight, height, activityFactor, activityFactor);
+        	BMR mybmr = BMRCalculator.calculateKcal(sex, weight, height, activityFactor, activityFactor);
         	String error = mybmr.getError();
 
         	// Create layout container

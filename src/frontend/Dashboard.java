@@ -11,7 +11,8 @@ public class Dashboard {
     private final UIManager uiManager;
     private BorderPane layout;  // Make layout an instance variable
     private Label contentLabel;
-    private HomePage homePage; // Reference to HomePage
+    private NutritiousSection ns; // Reference to HomePage
+    private HomePage homepage;
 
     public Dashboard(UIManager uiManager, User user) {
         this.uiManager = uiManager;
@@ -27,13 +28,13 @@ public class Dashboard {
 
         Button homeButton = new Button("Home");
         Button foodButton = new Button("Food Nutrition");
-//        Button profileButton = new Button("Profile");
-//        Button settingsButton = new Button("Settings");
+        Button calculateBMR = new Button("Calculate BMR");
+        Button userGuide = new Button("User Guide");
         Button logoutButton = new Button("Logout");
-//        Button BMRButton = new Button("C BMR & Kcal");
 
         // Create HomePage instance
-        homePage = new HomePage(uiManager,user);
+        ns = new NutritiousSection(uiManager,user);
+        homepage = new HomePage(uiManager, user);
 
         // Content Label (Changes Based on Selection)
         contentLabel = new Label("Welcome, " + user.getName() + "!");
@@ -45,34 +46,38 @@ public class Dashboard {
         layout.setCenter(contentArea); // Default center content
 
         // Set Button Actions
-        homeButton.setOnAction(e -> showContent("Home")); // Set HomePage content
-        foodButton.setOnAction(e -> layout.setCenter(homePage.getRoot()));
-//        BMRButton.setOnAction(e -> showContent("CalCulate"));
-//        profileButton.setOnAction(e -> showContent("ðŸ‘¤ User Profile"));
-//        settingsButton.setOnAction(e -> showContent("âš™ Settings"));
+        homeButton.setOnAction(e -> layout.setCenter(homepage.getRoot())); // Set HomePage content
+        foodButton.setOnAction(e -> layout.setCenter(ns.getRoot()));
         logoutButton.setOnAction(e -> uiManager.showLoginScene()); // Return to Login Page
+        userGuide.setOnAction(e -> layout.setCenter(userGuide()));
+        calculateBMR.setOnAction(e -> {
+        	uiManager.showBMRScene(user);
+        });
 
         // Style Buttons
-        for (Button button : new Button[]{homeButton, foodButton, logoutButton}) {
+        for (Button button : new Button[]{homeButton, foodButton,userGuide, logoutButton, calculateBMR}) {
             button.setStyle("-fx-background-color: #34495E; -fx-text-fill: white; -fx-font-size: 14px;");
             button.setMaxWidth(Double.MAX_VALUE);
         }
 
-        sidebar.getChildren().addAll(menuTitle, homeButton, foodButton, logoutButton);
+        sidebar.getChildren().addAll(menuTitle, homeButton, foodButton,calculateBMR, userGuide, logoutButton);
         layout.setLeft(sidebar);
 
         scene = new Scene(layout, 1000, 600);  // Adjusted window size
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("../styless/style.css").toExternalForm());
 
     }
-
-    private void showContent(String text) {
-        contentLabel.setText(text);
-        layout.setCenter(new StackPane(contentLabel)); // Show text in center
-    }
-
     public Scene getScene() {
         return scene;
+    }
+    
+    public VBox userGuide() {
+        VBox sidebar = new VBox(10);
+        Label userGuideLabel = new Label("User Guide");
+        
+        sidebar.getChildren().add(userGuideLabel);
+        sidebar.setPadding(new Insets(20));        
+        return sidebar;  // ✅ Returning VBox instead of Scene
     }
 
 }
