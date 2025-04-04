@@ -46,7 +46,7 @@ public class HomepageLogic {
                 return "Error: Consumed calories exceed target!";
             }
             
-            if(targetCal.getEndDate().isAfter(currentDate)) {
+            if(currentDate.isAfter(targetCal.getEndDate())) {
             	return "You have reached the date";
             }
 
@@ -54,7 +54,7 @@ public class HomepageLogic {
             System.out.println(targetCal.getEndDate());
             System.out.println(currentDate);
 
-            TargetService.saveConsumedCaloriesToDatabase(totalcal, targetCalories);
+            TargetService.saveConsumedCaloriesToDatabase(totalcal, targetCal.getTargetId());
             TargetService.updateRemaining(id, totalcal);
             
             return "Sucess";

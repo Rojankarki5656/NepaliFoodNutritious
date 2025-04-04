@@ -41,7 +41,7 @@ public class NutritiousSection {
         ContextMenu suggestionsMenu = new ContextMenu();
         foodInput.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
-                List<String> foodSuggestions = FoodService.searchFood(newValue);
+                List<String> foodSuggestions = FoodService.searchFood(newValue, user.getUserPreference());
                 FoodService.showSuggestions(suggestionsMenu, foodInput, foodSuggestions);
             } else {
                 suggestionsMenu.hide();
@@ -100,17 +100,20 @@ public class NutritiousSection {
                 // Run method if "Yes" is clicked
                 if (result.isPresent() && result.get() == yesButton) {
                 	User_Target cal = TargetService.checkTarget(id);
-                	double target = cal.getTargetCalories();
                     String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
-                    TargetService.saveConsumedCaloriesToDatabase(quantity*calories, target );
+                    TargetService.saveConsumedCaloriesToDatabase(quantity*calories, cal.getTargetId());
                     TargetService.updateRemaining(id, quantity*calories);
                     calorieResultLabel.setText(result1);
+                    return;
                 } else {
                     String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
                     calorieResultLabel.setText(result1);
                 }
 
-        	}
+        	}else {
+                 String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
+                 calorieResultLabel.setText(result1);
+             }
             foodInput.clear();
             quantityInput.clear();
         });
@@ -154,8 +157,8 @@ public class NutritiousSection {
             updateMyboy(user.getId());
         });
         
-        int totalCaloriesResult = TargetService.updateCalories(user.getId());
-        totalCalories.setText("Total Calories: "+totalCaloriesResult);
+        int totalCaloriesResult = TargetService.getSumOfCaloriesTaken(user.getId());
+        totalCalories.setText("Total Calories: "+ totalCaloriesResult);
         updateMyboy(user.getId());
         //adding all the widgets in HBox container
         HBox inputSection = new HBox(10, foodInput, quantityInput, addButton, searchButton, calculateButton);
@@ -164,7 +167,7 @@ public class NutritiousSection {
 
         // Scene Setup
         scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("../styless/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("../resources/style.css").toExternalForm());
     }
 
     public VBox getRoot() {
@@ -174,6 +177,8 @@ public class NutritiousSection {
     private void updateMyboy(int id) {
     	pieChart.getData().clear();
         barChart.getData().clear();
+        int totalCaloriesResult = TargetService.getSumOfCaloriesTaken(id);
+        totalCalories.setText("Total Calories: "+totalCaloriesResult);
 
         Map<String, Integer> foodData = FoodService.updateCharts(id);
         XYChart.Series<String, Number> series = new XYChart.Series<>();

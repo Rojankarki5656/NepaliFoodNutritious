@@ -153,13 +153,22 @@ public class FoodService {
 					e.printStackTrace();
 				}
 		return null;
-			}
+		}
 
 
-		public static List<String> searchFood(String keyword) {
+		public static List<String> searchFood(String keyword, String preference) {
 		    List<String> results = new ArrayList<>();
-		    String query = "SELECT name FROM foods WHERE name LIKE ? LIMIT 5"; // Limit results
-		
+		    String query;
+
+		    // Decide query based on preference
+		    if (preference.equals("veg")) {
+		        query = "SELECT name FROM foods WHERE name LIKE ? AND category = 'veg' LIMIT 5";
+		    } else if (preference.equals("non-veg")) {
+		        query = "SELECT name FROM foods WHERE name LIKE ? LIMIT 5";
+		    } else {
+		        query = "SELECT name FROM foods WHERE name LIKE ? LIMIT 5";
+		    }    	
+		    // Limit results	
 		    try (Connection conn = DBConnection.connectDB();
 		         PreparedStatement stmt = conn.prepareStatement(query)) {
 		

@@ -14,6 +14,9 @@ public class Register {
         nameField.setPromptText("Full Name");
         TextField emailField = new TextField();
         emailField.setPromptText("Email");
+        ComboBox<String> dietCombo = new ComboBox<>();
+        dietCombo.getItems().addAll("veg", "non-veg");
+        dietCombo.setPromptText("Select Preference");
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
         PasswordField confirmPasswordField = new PasswordField();
@@ -26,21 +29,22 @@ public class Register {
         registerButton.setOnAction(e -> {
         	String name = nameField.getText();
         	String email = emailField.getText();
+        	String preference = dietCombo.getValue();
         	String password =passwordField.getText();
         	String confirmPassword = confirmPasswordField.getText();
         	ValidationLogic logic = new ValidationLogic(uiManager);
-        	String result = logic.registerValidation(name, email, password, confirmPassword);
+        	String result = logic.registerValidation(name, email,preference, password, confirmPassword);
         	messageLabel.setText(result);
         	
         });
 
         backButton.setOnAction(e -> uiManager.showLoginScene());
 
-        VBox layout = new VBox(10, titleLabel, nameField, emailField, passwordField, confirmPasswordField, registerButton, backButton, messageLabel);
+        VBox layout = new VBox(10, titleLabel, nameField, emailField,dietCombo, passwordField, confirmPasswordField, registerButton, backButton, messageLabel);
         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 
         scene = new Scene(layout, 1550, 800);
-        scene.getStylesheets().add(getClass().getResource("../styless/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("../resources/style.css").toExternalForm());
 
     }
 

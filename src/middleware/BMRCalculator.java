@@ -6,9 +6,14 @@ public class BMRCalculator {
     public static BMR calculateKcal(String sex, double weight, double height, int age, int activityFactor) {
         double bmr = 0;
         String error = "";
+        System.out.println(age);
         
-        if (weight <= 0 || height <= 0 || age <= 0) {
+        if (weight <= 0 || height <= 0 || age <=0 ) {
         	return new BMR(bmr, bmr, "Age or weight or height cannot be less than zero.");
+        }
+        if(activityFactor <=0 || activityFactor>4)
+        {
+        	return new BMR(bmr,bmr,"activity factor should be between 0 and 4 only");
         }
         // Calculate BMR based on sex
         if (sex.equalsIgnoreCase("male")) {
