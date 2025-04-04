@@ -14,7 +14,7 @@ public class Login {
         Label titleLabel = new Label("Login");
 
         // Load image
-        Image logo = new Image(getClass().getResource("../styless/logo.png").toExternalForm());
+        Image logo = new Image(getClass().getResource("../resources/logo.png").toExternalForm());
         ImageView logoView = new ImageView(logo);
         logoView.setFitWidth(100); // Set width
         logoView.setPreserveRatio(true); // Maintain aspect ratio
@@ -45,7 +45,7 @@ public class Login {
         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 
         scene = new Scene(layout, 1550, 800);
-        scene.getStylesheets().add(getClass().getResource("../styless/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("../resources/style.css").toExternalForm());
     }
 
     public Scene getScene() {

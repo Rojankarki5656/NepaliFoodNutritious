@@ -74,9 +74,9 @@ public class ValidationLogic {
         return "Password is valid."; // Password meets all criteria
     }
     
-    public String registerValidation(String name, String email, String password, String confirmPassword) {
+    public String registerValidation(String name, String email,String preference, String password, String confirmPassword) {
     	
-        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || preference.isEmpty()) {
             return "ERROR: Email or password or confirm password cannot be empty!";
         }
         if (!isValidEmail(email)) {
@@ -90,7 +90,7 @@ public class ValidationLogic {
              // Stop further processing if password is invalid
         }
     	if(password.equals(confirmPassword)) {
-            UserService.register(name,email, password);
+            UserService.register(name,email,preference, password);
             uiManager.showLoginScene();
             return "Register Successful!";
        }else {
@@ -99,6 +99,30 @@ public class ValidationLogic {
 		
     	
     	
+    }
+    public String updateProfileValidation(String update, int id, String type) {
+    	
+    	try{if(update.isEmpty() || update.isBlank()) {
+    		System.out.println("Babe");
+    		return "Please select or fill the black field.";
+    	}} catch (Exception e) {
+    	    e.printStackTrace();
+    	    return "An error occurred while validating the field.";
+    	}
+    	
+    	if(type.equals("password")) {        
+    		String passwordValidationMessage = validatePassword(update);
+    		if (!passwordValidationMessage.equals("Password is valid.")) {
+    	    	UserService.updateProfile(update,id, type);
+            return passwordValidationMessage; // Show password validation error
+             // Stop further processing if password is invalid
+        	}
+    		return passwordValidationMessage;
+        }
+    	
+    	UserService.updateProfile(update,id, type);
+
+		return "Sucess";
     }
     
 }

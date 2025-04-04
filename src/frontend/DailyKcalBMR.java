@@ -63,11 +63,11 @@ public class DailyKcalBMR {
         	String sex = sexField.getText();
         	double weight = Double.parseDouble(weightField.getText());
         	double height = Double.parseDouble(heightField.getText());
-        	double age = Double.parseDouble(ageField.getText());
+        	int age = Integer.parseInt(ageField.getText());
         	int activityFactor = Integer.parseInt(activityFactorField.getText());
 
         	// Calculate BMR
-        	BMR mybmr = BMRCalculator.calculateKcal(sex, weight, height, activityFactor, activityFactor);
+        	BMR mybmr = BMRCalculator.calculateKcal(sex, weight, height,age, activityFactor);
         	String error = mybmr.getError();
 
         	// Create layout container

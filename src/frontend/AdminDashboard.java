@@ -69,7 +69,7 @@ public class AdminDashboard{
         layout.setPadding(new Insets(20));
 
         this.scene = new Scene(layout, 800, 500);
-        this.scene.getStylesheets().add(getClass().getResource("../styless/style.css").toExternalForm());
+        this.scene.getStylesheets().add(getClass().getResource("../resources/style.css").toExternalForm());
     }
     public Scene getScene() {
         return scene;

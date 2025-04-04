@@ -3,21 +3,21 @@ package Models;
 import java.time.LocalDate;
 
 public class User_Target{
-    private int userId;
+    private int targetId;
     private double targetCalories;
-    private String status; // "In Progress", "Completed", "Not Completed", "Reset"
+    private String status; 
     private double calories_taken;
     private double targetRemaining;
     private LocalDate startDate;
     private LocalDate endDate;
 
     // Getters and setters
-    public int getUserId() {
-        return userId;
+    public int getTargetId() {
+        return targetId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setTargetId(int targetId) {
+        this.targetId = targetId;
     }
 
     public double getTargetCalories() {

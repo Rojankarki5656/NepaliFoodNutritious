@@ -46,6 +46,8 @@ public class UIManager {
         } else if (user.getActor().equals("admin")) {
             this.adminDashboard = new AdminDashboard(this, user);
             primaryStage.setScene(adminDashboard.getScene());
+        }else {
+        	System.out.println("You are not either user or admin.");
         }
         }
 
