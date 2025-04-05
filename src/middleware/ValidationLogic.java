@@ -102,27 +102,24 @@ public class ValidationLogic {
     }
     public String updateProfileValidation(String update, int id, String type) {
     	
-    	try{if(update.isEmpty() || update.isBlank()) {
-    		System.out.println("Babe");
+    	if(update == null || update.isEmpty()) {
     		return "Please select or fill the black field.";
-    	}} catch (Exception e) {
-    	    e.printStackTrace();
-    	    return "An error occurred while validating the field.";
     	}
     	
     	if(type.equals("password")) {        
     		String passwordValidationMessage = validatePassword(update);
-    		if (!passwordValidationMessage.equals("Password is valid.")) {
+    		if (passwordValidationMessage.equals("Password is valid.")) {
+
+    			System.out.println("Babe");
     	    	UserService.updateProfile(update,id, type);
-            return passwordValidationMessage; // Show password validation error
-             // Stop further processing if password is invalid
         	}
     		return passwordValidationMessage;
-        }
+        }else {
     	
     	UserService.updateProfile(update,id, type);
-
 		return "Sucess";
+}
+
     }
     
 }

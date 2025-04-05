@@ -2,8 +2,11 @@ package utils;
 
 import java.util.Optional;
 
+import Models.User_Target;
+import backend.TargetService;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import middleware.NutritiousSectionLogic;
 
 public class AlertUtil {
 	
@@ -33,5 +36,27 @@ public class AlertUtil {
    	        }
    	    return false;
        }
+    
+    public static boolean showConfirmation() {
+    	Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Message");
+        alert.setHeaderText(null); // No header
+        alert.setContentText("Do you want to add in your calories taken of your target");
+
+        // Customize button types
+        ButtonType yesButton = new ButtonType("Yes");
+        ButtonType noButton = new ButtonType("No");
+
+        alert.getButtonTypes().setAll(yesButton, noButton);
+
+        // Show the alert and wait for response
+        Optional<ButtonType> result = alert.showAndWait();
+        // Run method if "Yes" is clicked
+        if (result.isPresent() && result.get() == yesButton) {
+            return true;
+        } else {
+        	return false;
+        }
+    }
 
 }

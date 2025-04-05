@@ -16,7 +16,8 @@ public class NutritiousSectionLogic {
 
 	}
 	public static String addLogic(int id, String foodName, int quantity, float calories) {
-        if (!foodName.isEmpty()) {
+
+        if (!foodName.isEmpty() && quantity >= 0) {
         	String result = FoodService.addFood(id, foodName, quantity, calories);
         	return result;
 		

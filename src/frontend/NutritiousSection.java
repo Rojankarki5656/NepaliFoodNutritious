@@ -6,6 +6,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import middleware.CaloriesCalculator;
 import middleware.NutritiousSectionLogic;
+import utils.AlertUtil;
 import javafx.geometry.Insets;
 import java.util.List;
 import java.util.Map;
@@ -78,42 +79,40 @@ public class NutritiousSection {
         
         //Logics of the Buttons
         addButton.setOnAction(e -> {
-        	int id = user.getId();
-        	int quantity = Integer.parseInt(quantityInput.getText());
-        	String foodName = foodInput.getText();
-        	Float calories = FoodService.foodCalories(foodName);
-        	boolean isTrue = NutritiousSectionLogic.checkLogic(id);
-        	if(isTrue) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Message");
-                alert.setHeaderText(null); // No header
-                alert.setContentText("Do you want to add in your calories taken of your target");
-
-                // Customize button types
-                ButtonType yesButton = new ButtonType("Yes");
-                ButtonType noButton = new ButtonType("No");
-
-                alert.getButtonTypes().setAll(yesButton, noButton);
-
-                // Show the alert and wait for response
-                Optional<ButtonType> result = alert.showAndWait();
-                // Run method if "Yes" is clicked
-                if (result.isPresent() && result.get() == yesButton) {
-                	User_Target cal = TargetService.checkTarget(id);
-                    String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
-                    TargetService.saveConsumedCaloriesToDatabase(quantity*calories, cal.getTargetId());
-                    TargetService.updateRemaining(id, quantity*calories);
-                    calorieResultLabel.setText(result1);
-                    return;
-                } else {
-                    String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
-                    calorieResultLabel.setText(result1);
-                }
-
-        	}else {
-                 String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
-                 calorieResultLabel.setText(result1);
-             }
+        	try {
+	            int id = user.getId();
+	        	int quantity = Integer.parseInt(quantityInput.getText());
+	        	String foodName = foodInput.getText();
+	        	Float calories = FoodService.foodCalories(foodName);
+	        	if(calories != null) {
+	        		System.out.println(calories);
+		        	boolean isTrue = NutritiousSectionLogic.checkLogic(id);
+		        	if(isTrue) {
+		        		new AlertUtil();
+						boolean isFalse = AlertUtil.showConfirmation();
+		                if (!isFalse) {
+			                	User_Target cal = TargetService.checkTarget(id);
+			                    String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
+			                    TargetService.saveConsumedCaloriesToDatabase(quantity*calories, cal.getTargetId());
+			                    TargetService.updateRemaining(id, quantity*calories);
+			                    calorieResultLabel.setText(result1);
+			                    return;
+		
+			                }else{
+			                    String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
+			                    calorieResultLabel.setText(result1);
+			                }
+		
+			        	}else {
+			        		String result1 = NutritiousSectionLogic.addLogic(id, foodName, quantity, calories);
+			        		calorieResultLabel.setText(result1);
+			        		}
+	        		}else {
+			        	calorieResultLabel.setText("Food not found!");
+	        		}
+        		} catch (Exception err) {
+         		calorieResultLabel.setText(err.getMessage());
+        		}
             foodInput.clear();
             quantityInput.clear();
         });
