@@ -3,7 +3,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import middleware.ValidationLogic;
-import backend.UserService;
 
 public class Register {
     private final Scene scene;
@@ -12,15 +11,24 @@ public class Register {
         Label titleLabel = new Label("Register");
         TextField nameField = new TextField();
         nameField.setPromptText("Full Name");
+        titleLabel.setStyle("-fx-font-size: 50px; -fx-font-weight: bold;");
+
+        nameField.setMaxWidth(300);
         TextField emailField = new TextField();
         emailField.setPromptText("Email");
+        emailField.setMaxWidth(300);
+
         ComboBox<String> dietCombo = new ComboBox<>();
         dietCombo.getItems().addAll("veg", "non-veg");
         dietCombo.setPromptText("Select Preference");
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
+        passwordField.setMaxWidth(300);
+
         PasswordField confirmPasswordField = new PasswordField();
         confirmPasswordField.setPromptText("Confirm Password");
+        confirmPasswordField.setMaxWidth(300);
+
         Button registerButton = new Button("Register");
         Button backButton = new Button("Back to Login");
         Label messageLabel = new Label();
@@ -43,7 +51,7 @@ public class Register {
         VBox layout = new VBox(10, titleLabel, nameField, emailField,dietCombo, passwordField, confirmPasswordField, registerButton, backButton, messageLabel);
         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 
-        scene = new Scene(layout, 1550, 800);
+        scene = new Scene(layout, 800, 600);
         scene.getStylesheets().add(getClass().getResource("../resources/style.css").toExternalForm());
 
     }

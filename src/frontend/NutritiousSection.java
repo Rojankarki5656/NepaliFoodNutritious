@@ -85,7 +85,6 @@ public class NutritiousSection {
 	        	String foodName = foodInput.getText();
 	        	Float calories = FoodService.foodCalories(foodName);
 	        	if(calories != null) {
-	        		System.out.println(calories);
 		        	boolean isTrue = NutritiousSectionLogic.checkLogic(id);
 		        	if(isTrue) {
 		        		new AlertUtil();

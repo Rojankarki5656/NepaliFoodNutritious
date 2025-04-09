@@ -52,7 +52,6 @@ public class TargetService {
 		return null;
 	}
 	public static void saveConsumedCaloriesToDatabase(double consumed, int target_id) {
-		System.out.println("Consumed cal :" + consumed);
 		try (Connection conn = DBConnection.connectDB()) {
 	        String query = "UPDATE user_target SET calories_taken = calories_taken + ? WHERE target_id = ?";
 	        PreparedStatement pstmt = conn.prepareStatement(query);
@@ -77,12 +76,9 @@ public class TargetService {
 	    }
 	}
 	public static void updateRemaining(int id, double totalcal) {
-		System.out.println("consumed cal of remaing: "+ totalcal);
 	    try (Connection conn = DBConnection.connectDB()) {
 	        User_Target target = TargetService.checkTarget(id);
 	        double userTarget = target.getTargetCalories();
-	        System.out.println("USer target:"+ userTarget);
-	        System.out.println("Minus:" + (userTarget - totalcal));
 	    	if(target.getTargetRemaining() - totalcal < 0) {
 	    		System.out.println("Do nothing!");
 	    	}
@@ -110,7 +106,6 @@ public class TargetService {
 		        ResultSet rs = stmt.executeQuery();
 		        if(rs.next()) {
 		            totalCalories = rs.getInt("SUM(calories)");
-		            System.out.println(totalCalories);
 		            return totalCalories;
 		        }else {
 		        	return 0;

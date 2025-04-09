@@ -14,6 +14,7 @@ public class Dashboard {
     private NutritiousSection ns; // Reference to HomePage
     private HomePage homepage;
     private ProfileSection profilesection;
+    private DailyKcalBMR bmr;
 
     public Dashboard(UIManager uiManager, User user) {
         this.uiManager = uiManager;
@@ -38,6 +39,7 @@ public class Dashboard {
         ns = new NutritiousSection(uiManager,user);
         homepage = new HomePage(uiManager, user);
         profilesection = new ProfileSection(uiManager, user);
+        bmr = new DailyKcalBMR(uiManager, user);
 
         // Content Label (Changes Based on Selection)
         contentLabel = new Label("Welcome, " + user.getName() + "!");
@@ -55,7 +57,7 @@ public class Dashboard {
         userGuide.setOnAction(e -> layout.setCenter(userGuide()));
         profileSection.setOnAction(e -> layout.setCenter(profilesection.getRoot()));
         calculateBMR.setOnAction(e -> {
-        	uiManager.showBMRScene(user);
+        	layout.setCenter(bmr.getRoot());
         });
 
         // Style Buttons

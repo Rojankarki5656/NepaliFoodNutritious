@@ -1,7 +1,9 @@
 package frontend;
 import Models.User;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import utils.AlertUtil;
 
 public class UIManager {
     private final Stage primaryStage;
@@ -20,10 +22,6 @@ public class UIManager {
     public void showLoginScene() {
         primaryStage.setScene(login.getScene());
     }
-    public void showBMRScene(User user) {
-    	this.bmr = new DailyKcalBMR(this, user);
-        primaryStage.setScene(bmr.getScene());
-    }
 
     public void showRegisterScene() {
         primaryStage.setScene(register.getScene());
@@ -31,12 +29,14 @@ public class UIManager {
 
     public void showDashboard(User user) {
         if (user == null) {
-            System.out.println("User not found!");
+            new AlertUtil();
+			AlertUtil.showAlert(Alert.AlertType.INFORMATION, "Message","User not found!");
             return;
         }
 
         if (primaryStage == null) {
-            System.out.println("Error: Primary stage is not initialized!");
+            new AlertUtil();
+			AlertUtil.showAlert(Alert.AlertType.INFORMATION, "Message","Error: Primary stage is not initialized!");
             return;
         }
 
@@ -47,7 +47,8 @@ public class UIManager {
             this.adminDashboard = new AdminDashboard(this, user);
             primaryStage.setScene(adminDashboard.getScene());
         }else {
-        	System.out.println("You are not either user or admin.");
+            new AlertUtil();
+			AlertUtil.showAlert(Alert.AlertType.INFORMATION, "Message","You are not either user or admin.");
         }
         }
 

@@ -15,9 +15,10 @@ public class DailyKcalBMR {
     private Scene scene;
     private TextField sexField, weightField, heightField, ageField;
     private TextField activityFactorField;
+    private VBox layout;
 
     public DailyKcalBMR(UIManager uiManager, User user) {
-        VBox layout = new VBox(10);
+        layout = new VBox(10);
         layout.setPadding(new Insets(20));
         layout.setAlignment(Pos.CENTER); // center align all components.
 
@@ -127,7 +128,7 @@ public class DailyKcalBMR {
         scene = new Scene(layout, 800, 600);
     }
 
-    public Scene getScene() {
-        return scene;
+    public VBox getRoot() {
+        return layout;
     }
 }
